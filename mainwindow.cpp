@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget *clienti = new QWidget();
     QPushButton *newClient = new QPushButton();
     QLineEdit *txtCerca = new QLineEdit();
-    QListWidget *clientlist = new QListWidget();
+    QTabWidget *clientTab = new QTabWidget();
     QHBoxLayout *h_client = new QHBoxLayout();
     QVBoxLayout *v_client = new QVBoxLayout();
 
@@ -21,14 +21,14 @@ MainWindow::MainWindow(QWidget *parent) :
     h_client->addWidget(txtCerca);
     h_client->addWidget(newClient);
     v_client->addLayout(h_client);
-    v_client->addWidget(clientlist);
+    v_client->addWidget(clientTab);
     clienti->setLayout(v_client);
 
     //layout di fornitori
     QWidget *fornitori = new QWidget();
     QPushButton *newFornit = new QPushButton();
     QLineEdit *txtfornit = new QLineEdit();
-    QListWidget *fornitlist = new QListWidget();
+    QTabWidget *fornitlist = new QTabWidget();
     QHBoxLayout *h_fornit = new QHBoxLayout();
     QVBoxLayout *v_fornit = new QVBoxLayout();
 
@@ -43,16 +43,75 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget *prodotti = new QWidget();
     QPushButton *newProduct = new QPushButton();
     QLineEdit *txtProduct = new QLineEdit();
-    QListWidget *productList = new QListWidget();
+    QTabWidget *productList = new QTabWidget();
     QHBoxLayout *h_product = new QHBoxLayout();
     QVBoxLayout *v_product = new QVBoxLayout();
+    QGroupBox *prod_grup = new QGroupBox(tr("Visualizza prodotti fuori commercio"));
+    QVBoxLayout *v_group = new QVBoxLayout();
+    QCheckBox *visualize= new QCheckBox();
 
+    visualize->setText("Visualizza");
+    visualize->setChecked(false);
+    prod_grup->setFlat(true);
+    v_group->addWidget(visualize);
+    prod_grup->setLayout(v_group);
     newProduct->setText("NEW");
     h_product->addWidget(txtProduct);
     h_product->addWidget(newProduct);
     v_product->addLayout(h_product);
     v_product->addWidget(productList);
+    v_product->addWidget(prod_grup);
     prodotti->setLayout(v_product);
+
+    //layout di fatture
+    QLineEdit *searchInvoices = new QLineEdit();
+    QPushButton *newButton = new QPushButton();
+    QGroupBox *newInvoices = new QGroupBox(tr("Aggiungi fattura"));
+    QVBoxLayout *v_lay = new QVBoxLayout();
+    QHBoxLayout *h_lay = new QHBoxLayout();
+    QRadioButton *radioClient = new QRadioButton(tr("per un cliente"));
+    radioClient->setChecked(false);
+    QRadioButton *radioSupplier = new QRadioButton(tr("da un fornitore"));
+    radioSupplier->setChecked(false);
+    QTabWidget *invoicesList = new QTabWidget();
+    QGroupBox *invoicesVisualize = new QGroupBox(tr("Visualizza Fatture:"));
+    QCheckBox *checkClient = new QCheckBox(tr("Da clienti"));
+    checkClient->setChecked(true);
+    QCheckBox *checkSuppliers = new QCheckBox(tr("Da fornitori"));
+    checkSuppliers->setChecked(true);
+    QHBoxLayout *searchNew = new QHBoxLayout();
+    QHBoxLayout *h_invoices = new QHBoxLayout();
+    QHBoxLayout *clientSupplier = new QHBoxLayout();
+    QVBoxLayout * v_invoices = new QVBoxLayout();
+
+    newButton->setText("NEW");
+    //vertical layout for two radio button
+    v_lay->addWidget(radioClient);
+    v_lay->addWidget(radioSupplier);
+    //horizontal layout for button new
+    h_lay->addWidget(newButton);
+    h_lay->addLayout(v_lay);
+    //group box for button new and radio button
+    //newInvoices->setFlat(true);
+    newInvoices->setLayout(h_lay);
+    //new horizontal layout for line edit search
+    searchNew->addWidget(searchInvoices);
+    //horizontal layout for horizontal layout for line edit search and for group box for radio button and button new
+    h_invoices->addLayout(searchNew);
+    h_invoices->addWidget(newInvoices);
+    //group box for checkbox client and suppliers
+    invoicesVisualize->setFlat(true);
+    clientSupplier->addWidget(checkClient);
+    clientSupplier->addWidget(checkSuppliers);
+    invoicesVisualize->setLayout(clientSupplier);
+    //add at widget layout the horizontal layout, list box and gruopbox with checkbox
+    v_invoices->addLayout(h_invoices);
+    v_invoices->addWidget(invoicesList);
+    v_invoices->addWidget(invoicesVisualize);
+
+    fatture->setLayout(v_invoices);
+
+
 
 
     //agiungiamo alla schermata centrale tutti i nostri tab e visualizziamo
@@ -63,6 +122,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tw->addTab(prodotti, "Prodotti");
     tw->addTab(fatture, "Fatture");
     this->setCentralWidget(tw);
+
 
     //ui->setupUi(this);
 }

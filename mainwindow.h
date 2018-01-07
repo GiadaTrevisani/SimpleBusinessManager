@@ -6,11 +6,12 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
-#include <QListWidget>
+#include <QTabWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QBoxLayout>
+#include <QGroupBox>
 #include <QCheckBox>
+#include <QRadioButton>
 
 namespace Ui {
 class MainWindow;
