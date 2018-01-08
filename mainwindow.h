@@ -12,6 +12,7 @@
 #include <QGroupBox>
 #include <QCheckBox>
 #include <QRadioButton>
+#include <QListView>
 
 namespace Ui {
 class MainWindow;
