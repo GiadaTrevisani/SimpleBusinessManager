@@ -25,10 +25,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    homewidget.cpp \
+    clientwidget.cpp \
+    fornitoriwidget.cpp \
+    prodottiwidget.cpp \
+    fatturewidget.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    homewidget.h \
+    clientwidget.h \
+    fornitoriwidget.h \
+    prodottiwidget.h \
+    fatturewidget.h
 
 FORMS += \
         mainwindow.ui
