@@ -2,17 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QWidget>
-#include <QLabel>
-#include <QPushButton>
-#include <QLineEdit>
+
 #include <QTabWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QGroupBox>
-#include <QCheckBox>
-#include <QRadioButton>
-#include <QListView>
+
+#include "homewidget.h"
+#include "clientwidget.h"
+#include "fornitoriwidget.h"
+#include "prodottiwidget.h"
+#include "fatturewidget.h"
 
 namespace Ui {
 class MainWindow;
