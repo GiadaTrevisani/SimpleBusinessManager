@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -30,7 +31,8 @@ SOURCES += \
     clientwidget.cpp \
     fornitoriwidget.cpp \
     prodottiwidget.cpp \
-    fatturewidget.cpp
+    fatturewidget.cpp \
+    abstractdatabasemanager.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -38,7 +40,8 @@ HEADERS += \
     clientwidget.h \
     fornitoriwidget.h \
     prodottiwidget.h \
-    fatturewidget.h
+    fatturewidget.h \
+    abstractdatabasemanager.h
 
 FORMS += \
         mainwindow.ui

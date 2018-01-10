@@ -13,6 +13,7 @@
 #include <QRadioButton>
 #include <QListView>
 #include <QTableWidget>
+#include <QTableView>
 #include <QStackedLayout>
 
 class ProdottiWidget : public QWidget
@@ -20,6 +21,7 @@ class ProdottiWidget : public QWidget
     Q_OBJECT
 public:
     explicit ProdottiWidget(QWidget *parent = nullptr);
+    ~ProdottiWidget();
 
 signals:
 
@@ -30,7 +32,7 @@ private:
 
     QPushButton *newProduct;
     QLineEdit *txtProduct;
-    QTableWidget *productList;
+    QTableView *productList;
     QCheckBox *visualize;
 
     QLineEdit *txtIDProd;

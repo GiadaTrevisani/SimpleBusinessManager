@@ -3,15 +3,16 @@
 FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
 {
     searchInvoices = new QLineEdit();
+    searchInvoices->setPlaceholderText("Cerca Fattura");
     newButton = new QPushButton();
     QGroupBox *newInvoices = new QGroupBox(tr("Aggiungi fattura"));
     QVBoxLayout *v_lay = new QVBoxLayout();
     QHBoxLayout *h_lay = new QHBoxLayout();
     radioClient = new QRadioButton(tr("per un cliente"));
-    radioClient->setChecked(false);
+    radioClient->setChecked(true);
     radioSupplier = new QRadioButton(tr("da un fornitore"));
     radioSupplier->setChecked(false);
-    invoicesList = new QTableWidget();
+    invoicesList = new QListView();
     QGroupBox *invoicesVisualize = new QGroupBox(tr("Visualizza Fatture:"));
     checkClient = new QCheckBox(tr("Da clienti"));
     checkClient->setChecked(true);
@@ -49,7 +50,6 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
 
     //layout dettaglaito di fatture
     //LE FATTURE NON SI POSSONO ELIMINARE!!!
-    QLabel *Idfatt= new QLabel();       //primary key
     QLabel *fattRSocFor = new QLabel();
     QLabel *fattIndFor = new QLabel();
     QLabel *fattTelFor = new QLabel();
@@ -61,7 +61,6 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
     fattMailFor->setText("Mail: ");
     fattPIvaFor->setText("Partita Iva: ");
 
-    txtidfatt = new QLineEdit();
     txtfattRSocFor = new QLineEdit();
     txtfattIndFor = new QLineEdit();
     txtFattTelFor = new QLineEdit();
@@ -90,6 +89,23 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
     txtfattPIvaCli = new QLineEdit();
     txtfattCFiscCli = new QLineEdit();
 
+    QLabel *codFatt = new QLabel();
+    QLabel *dataFatt = new QLabel();
+    QLabel *importoFatt = new QLabel();
+    QLabel *IvaFatt = new QLabel();
+    QLabel *totFatt = new QLabel();
+
+    txtCodFatt = new QLineEdit();
+    txtDataFatt = new QLineEdit();
+    txtImpFatt = new QLineEdit();
+    txtIvaFatt = new QLineEdit();
+    txtTotFatt = new QLineEdit();
+    codFatt->setText("Codice Fattura: ");
+    dataFatt->setText("Data Fattura: ");
+    importoFatt->setText(("Importo: "));
+    IvaFatt->setText("IVA: ");
+    totFatt->setText("Totale: ");
+
     QHBoxLayout *h_idFatt = new QHBoxLayout();
     QHBoxLayout *h_fattRSocFor = new QHBoxLayout();
     QHBoxLayout *h_fattIndFor = new QHBoxLayout();
@@ -108,9 +124,10 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
     QVBoxLayout *v_fattCli = new QVBoxLayout();
     QHBoxLayout *h_fattForCli = new QHBoxLayout();
     QVBoxLayout *v_finalFatt = new QVBoxLayout();
+    QHBoxLayout *h_fatt1 = new QHBoxLayout();
+    QHBoxLayout *h_fatt2 = new QHBoxLayout();
+    QGroupBox *boxFatt = new QGroupBox();
 
-    h_idFatt->addWidget(Idfatt);
-    h_idFatt->addWidget(txtidfatt);
     h_fattRSocFor->addWidget(fattRSocFor);
     h_fattRSocFor->addWidget(txtfattRSocFor);
     h_fattIndFor->addWidget(fattIndFor);
@@ -155,9 +172,27 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
 
     h_fattForCli->addLayout(v_fattFor);
     h_fattForCli->addLayout(v_fattCli);
+    h_fatt1->addWidget(codFatt);
+    h_fatt1->addWidget(txtCodFatt);
+    h_fatt1->addWidget(dataFatt);
+    h_fatt1->addWidget(txtDataFatt);
+
+    h_fatt2->addWidget(importoFatt);
+    h_fatt2->addWidget(txtImpFatt);
+    h_fatt2->addWidget(IvaFatt);
+    h_fatt2->addWidget(txtIvaFatt);
+    h_fatt2->addWidget(totFatt);
+    h_fatt2->addWidget(txtTotFatt);
+
+    QVBoxLayout *fattLay = new QVBoxLayout();
+    fattLay->addLayout(h_fatt1);
+    fattLay->addWidget(fatt);
+    fattLay->addLayout(h_fatt2);
+
+    boxFatt->setLayout(fattLay);
 
     v_finalFatt->addLayout(h_fattForCli);
-    v_finalFatt->addWidget(fatt);
+    v_finalFatt->addWidget(boxFatt);
 
     //Maschro i Layouts da Widget per usare il metodo addWidget()
     QWidget* c0 = new QWidget(); // primo stack con la vista standard
@@ -173,4 +208,29 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
     stack->setCurrentIndex(0);
 
     this->setLayout(stack);
+}
+
+FattureWidget::~FattureWidget(){
+    delete searchInvoices;
+    delete newButton;
+    delete radioClient;
+    delete radioSupplier;
+    delete invoicesList;
+    delete checkClient;
+    delete checkSuppliers;
+    delete txtFattCapCli;
+    delete txtfattCFiscCli;
+    delete txtfattCityCli;
+    delete txtfattIndCli;
+    delete txtfattIndFor;
+    delete txtfattMailFor;
+    delete txtfattPIvaCli;
+    delete txtfattPIvaFor;
+    delete txtfattRSocCli;
+    delete txtfattRSocFor;
+    delete txtFattTelFor;
+    delete txtidfatt;
+    delete fatt;
+
+    delete stack;
 }

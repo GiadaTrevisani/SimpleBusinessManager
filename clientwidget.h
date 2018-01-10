@@ -13,6 +13,7 @@
 #include <QRadioButton>
 #include <QListView>
 #include <QTableWidget>
+#include <QTableView>
 #include <QStackedLayout>
 
 class ClientWidget : public QWidget
@@ -20,6 +21,7 @@ class ClientWidget : public QWidget
     Q_OBJECT
 public:
     explicit ClientWidget(QWidget *parent = nullptr);
+    ~ClientWidget();
 
 signals:
 
@@ -28,7 +30,7 @@ public slots:
 private:
     QPushButton *newClient;
     QLineEdit *txtCerca;
-    QTableWidget *clientTab;
+    QTableView *clientTab;
 
     QPushButton *aggiorna;
 

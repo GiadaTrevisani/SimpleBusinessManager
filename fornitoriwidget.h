@@ -13,6 +13,7 @@
 #include <QRadioButton>
 #include <QListView>
 #include <QTableWidget>
+#include <QTableView>
 #include <QStackedLayout>
 
 class FornitoriWidget : public QWidget
@@ -20,6 +21,7 @@ class FornitoriWidget : public QWidget
     Q_OBJECT
 public:
     explicit FornitoriWidget(QWidget *parent = nullptr);
+    ~FornitoriWidget();
 
 signals:
 
@@ -28,7 +30,7 @@ public slots:
 private:
 	QPushButton *newFornit;
     QLineEdit *txtfornit;
-    QTableWidget *fornitlist;
+    QTableView *fornitlist;
 
     QPushButton *aggiornaFor;
 

@@ -7,22 +7,22 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     //creiamo le tab home, fornitori, clienti, prodotti e fatture
     //home
-    HomeWidget *home = new HomeWidget();
+    HomeWidget *home = new HomeWidget(this);
 
     //clienti
-    ClientWidget *clienti = new ClientWidget();
+    ClientWidget *clienti = new ClientWidget(this);
 
     //fornitori
-    FornitoriWidget *fornitori = new FornitoriWidget();
+    FornitoriWidget *fornitori = new FornitoriWidget(this);
 
     //layout di prodotti
-    ProdottiWidget *prodotti = new ProdottiWidget();
+    ProdottiWidget *prodotti = new ProdottiWidget(this);
 
     //layout di fatture
-    FattureWidget *fatture = new FattureWidget();
+    FattureWidget *fatture = new FattureWidget(this);
 
     //agiungiamo alla schermata centrale tutti i nostri tab e visualizziamo
-    QTabWidget *tw = new QTabWidget();
+    QTabWidget *tw = new QTabWidget(this);
     tw->addTab(home, "Home");
     tw->addTab(fornitori, "Fornitori");
     tw->addTab(clienti, "Clienti");
@@ -35,5 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+
+    //delete tw?
+    //delete ui;
 }

@@ -4,7 +4,8 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
 {
     newProduct = new QPushButton();
     txtProduct = new QLineEdit();
-    productList = new QTableWidget();
+    txtProduct->setPlaceholderText("Cerca Prodotto");
+    productList = new QTableView();
     QHBoxLayout *h_product = new QHBoxLayout();
     QVBoxLayout *v_product = new QVBoxLayout();
     QGroupBox *prod_grup = new QGroupBox(tr("Visualizza prodotti fuori commercio"));
@@ -96,4 +97,20 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
     stack->setCurrentIndex(0);
 
     this->setLayout(stack);
+}
+
+ProdottiWidget::~ProdottiWidget(){
+    delete stack;
+    delete newProduct;
+    delete productList;
+    delete visualize;
+    delete txtProduct;
+    delete txtIDProd;
+    delete txtDescProd;
+    delete txtPAcquisto;
+    delete txtPVendita;
+    delete txtGiacenza;
+    delete aggiornaProd;
+    delete togliComm;
+    delete rimettiComm;
 }

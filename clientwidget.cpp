@@ -4,7 +4,8 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
 {
     newClient = new QPushButton();
     txtCerca = new QLineEdit();
-    clientTab = new QTableWidget();
+    txtCerca->setPlaceholderText("Cerca Cliente");
+    clientTab = new QTableView();
     QHBoxLayout *h_client = new QHBoxLayout();
     QVBoxLayout *v_client = new QVBoxLayout();
 
@@ -123,4 +124,24 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
     stack->setCurrentIndex(0);
 
     this->setLayout(stack);
+}
+
+ClientWidget::~ClientWidget(){
+    delete newClient;
+    delete txtCerca;
+    delete clientTab;
+    delete newClient;
+    delete aggiorna;
+    delete txtclientName;
+    delete txtclientSurname;
+    delete txtclientAddress;
+    delete txtclientCap;
+    delete txtclientCity;
+    delete txtclientFiscalC;
+    delete txtclientMail;
+    delete txtclientPIva;
+    delete txtclientTel;
+    delete txtragSoc;
+
+
 }

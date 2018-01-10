@@ -4,7 +4,8 @@ FornitoriWidget::FornitoriWidget(QWidget *parent) : QWidget(parent)
 {
     newFornit = new QPushButton();
     txtfornit = new QLineEdit();
-    fornitlist = new QTableWidget();
+    txtfornit->setPlaceholderText("Cerca Fornitore");
+    fornitlist = new QTableView();
     QHBoxLayout *h_fornit = new QHBoxLayout();
     QVBoxLayout *v_fornit = new QVBoxLayout();
 
@@ -124,4 +125,22 @@ FornitoriWidget::FornitoriWidget(QWidget *parent) : QWidget(parent)
     stack->setCurrentIndex(0);
 
     this->setLayout(stack);
+}
+
+FornitoriWidget::~FornitoriWidget(){
+    delete newFornit;
+    delete txtfornit;
+    delete fornitlist;
+    delete aggiornaFor;
+    delete txtForName;
+    delete txtForSurname;
+    delete txtForAddress;
+    delete txtForCap;
+    delete txtForCity;
+    delete txtForFiscalC;
+    delete txtForMail;
+    delete txtForPIva;
+    delete txtForRSoc;
+    delete txtForTel;
+    delete stack;
 }

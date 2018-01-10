@@ -20,6 +20,7 @@ class FattureWidget : public QWidget
     Q_OBJECT
 public:
     explicit FattureWidget(QWidget *parent = nullptr);
+    ~FattureWidget();
 
 signals:
 
@@ -32,7 +33,7 @@ private:
     QRadioButton *radioClient;
     QRadioButton *radioSupplier;
 
-    QTableWidget *invoicesList;
+    QListView *invoicesList;
 
     QCheckBox *checkClient;
     QCheckBox *checkSuppliers;
@@ -52,6 +53,12 @@ private:
     QLineEdit *txtfattCityCli;
     QLineEdit *txtfattPIvaCli;
     QLineEdit *txtfattCFiscCli;
+
+    QLineEdit *txtCodFatt;
+    QLineEdit *txtDataFatt;
+    QLineEdit *txtImpFatt;
+    QLineEdit *txtIvaFatt;
+    QLineEdit *txtTotFatt;
 
     QStackedLayout* stack;
 };
