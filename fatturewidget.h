@@ -14,6 +14,7 @@
 #include <QListView>
 #include <QTableWidget>
 #include <QStackedLayout>
+#include <QModelIndex>
 
 class FattureWidget : public QWidget
 {

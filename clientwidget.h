@@ -16,6 +16,18 @@
 #include <QTableView>
 #include <QStackedLayout>
 
+#include <QSqlQueryModel>
+#include <QSqlQuery>
+#include <QHash>
+#include <QString>
+#include <QModelIndex>
+#include <QMap>
+
+#include <QDebug>
+#include <QMessageBox>
+
+#include "clientdatabasemanager.h"
+
 class ClientWidget : public QWidget
 {
     Q_OBJECT
@@ -26,13 +38,19 @@ public:
 signals:
 
 public slots:
+    void clientSelected(QModelIndex idx);
+    void newClientClicked();
+    void updateModel();
+    void goToMainView();
+    void updateClient();
+    void searchChanged(QString src);
 
 private:
     QPushButton *newClient;
     QLineEdit *txtCerca;
     QTableView *clientTab;
 
-    QPushButton *aggiorna;
+    QPushButton *aggiorna_add;
 
     QLineEdit *txtclientName;
     QLineEdit *txtragSoc;
@@ -46,6 +64,11 @@ private:
     QLineEdit *txtclientCap;
 
     QStackedLayout* stack;
+
+    ClientDatabaseManager* db;
+    QSqlQueryModel* model;
+
+    bool newORdetail;
 };
 
 #endif // CLIENTWIDGET_H

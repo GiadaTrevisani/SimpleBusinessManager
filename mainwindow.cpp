@@ -35,7 +35,5 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-
-    //delete tw?
     //delete ui;
 }

@@ -15,6 +15,7 @@
 #include <QTableWidget>
 #include <QTableView>
 #include <QStackedLayout>
+#include <QModelIndex>
 
 class ProdottiWidget : public QWidget
 {
