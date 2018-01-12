@@ -33,7 +33,9 @@ SOURCES += \
     prodottiwidget.cpp \
     fatturewidget.cpp \
     abstractdatabasemanager.cpp \
-    clientdatabasemanager.cpp
+    clientdatabasemanager.cpp \
+    fornitoridatabasemanager.cpp \
+    prodottidatabasemanager.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -43,7 +45,9 @@ HEADERS += \
     prodottiwidget.h \
     fatturewidget.h \
     abstractdatabasemanager.h \
-    clientdatabasemanager.h
+    clientdatabasemanager.h \
+    fornitoridatabasemanager.h \
+    prodottidatabasemanager.h
 
 FORMS += \
         mainwindow.ui

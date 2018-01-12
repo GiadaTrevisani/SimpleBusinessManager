@@ -57,10 +57,6 @@ QHash<QString, QString>* ClientDatabaseManager::getElement(QString id){
     return resultDictionary;
 }
 
-bool ClientDatabaseManager::removeElement(QString id){
-    return false;
-}
-
 bool ClientDatabaseManager::updateElement(QString id, QHash<QString, QString>* data){
     QSqlQuery query;
     query.prepare("UPDATE clienti SET clientName = :name, clientSurname = :surname, clientRSoc = :ragioneSoc, clientTel = :tel, mailClient = :mail, pIvaClient = :piva, addressClient = :address, cityClient = :city, CAPClient = :cap WHERE ClientFiscalC = :id");

@@ -31,7 +31,7 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
     QLabel *pVendita = new QLabel();
     QLabel *giacenza = new QLabel();
     txtIDProd = new QLineEdit();
-    txtDescProd =new QListView();
+    txtDescProd =new QLineEdit();
     txtPAcquisto = new QLineEdit();
     txtPVendita = new QLineEdit();
     txtGiacenza = new QLineEdit();
@@ -97,6 +97,112 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
     stack->setCurrentIndex(0);
 
     this->setLayout(stack);
+
+    txtIDProd->setEnabled(false);
+
+    //setup model
+    db = new ProdottiDatabaseManager(this);
+    model = db->getModel();
+    productList->setModel(model);
+
+    productList->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    QObject::connect(productList, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(productSelected(QModelIndex)));
+    QObject::connect(newProduct, SIGNAL(clicked(bool)), this, SLOT(newProductClicked()));
+    QObject::connect(aggiornaProd, SIGNAL(clicked(bool)), this, SLOT(updateProduct()));
+    QObject::connect(txtProduct, SIGNAL(textEdited(QString)), this, SLOT(searchChanged(QString)));
+
+    newORdetail = false;
+
+
+}
+
+void ProdottiWidget::updateModel(){
+    //model->query().exec(); // aggiorna la vista
+    delete model;
+    model = db->getModel();
+    productList->setModel(model);
+}
+
+void ProdottiWidget::updateProduct(){
+    QHash<QString, QString>* data = new QHash<QString, QString>();
+
+    data->insert("description", txtDescProd->text());
+    data->insert("purchasePrice", txtPAcquisto->text());
+    data->insert("sellingPrice", txtPVendita->text());
+    data->insert("stock", txtGiacenza->text());
+
+    //controlla che i campi siano tutti riempiti (quelli not null obbligatori)
+    bool res;
+    if(newORdetail){
+        res = db->insertElement(txtIDProd->text(), data);
+    } else {
+        res = db->updateElement(txtIDProd->text(), data);
+    }
+
+    this->stack->setCurrentIndex(0);
+    delete data;
+    updateModel();
+
+    if(!res){
+        QMessageBox msgBox;
+        msgBox.setText("C'è stato un errore nell'inserimento dei dati");
+        msgBox.exec();
+    }
+
+}
+
+void ProdottiWidget::searchChanged(QString src){
+    delete model;
+    model = db->getModel(src);
+    productList->setModel(model);
+}
+
+void ProdottiWidget::goToMainView(){
+    updateModel();
+    this->stack->setCurrentIndex(0);
+
+}
+
+void ProdottiWidget::productSelected(QModelIndex idx){
+    newORdetail = false;
+    aggiornaProd->setText("AGGIORNA");
+    txtIDProd->setEnabled(false);
+
+    //get id from table
+    QString id = model->itemData(model->index(idx.row(), 0)).value(0).toString();
+    QHash<QString, QString>* data = db->getElement(id);
+
+    if(data->value("error") == "true"){
+        QMessageBox msgBox;
+        msgBox.setText("C'è stato un errore, elemento non esistente");
+        msgBox.exec();
+
+        delete data;
+        return;
+    }
+    //riempi i campi
+    txtDescProd->setText(data->value("description"));
+    txtPAcquisto->setText(data->value("purchasePrice"));
+    txtPVendita->setText(data->value("sellingPrice"));
+    txtGiacenza->setText(data->value("stock"));
+
+    this->stack->setCurrentIndex(1);
+    delete data;
+
+}
+
+void ProdottiWidget::newProductClicked(){
+    newORdetail = true;
+    aggiornaProd->setText("Inserisci");
+    txtIDProd->setEnabled(true);
+
+    txtDescProd->setText("");
+    txtPAcquisto->setText("");
+    txtPVendita->setText("");
+    txtGiacenza->setText("");
+
+    this->stack->setCurrentIndex(1);
 }
 
 ProdottiWidget::~ProdottiWidget(){

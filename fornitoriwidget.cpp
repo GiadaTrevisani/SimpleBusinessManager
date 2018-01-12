@@ -125,8 +125,127 @@ FornitoriWidget::FornitoriWidget(QWidget *parent) : QWidget(parent)
     stack->setCurrentIndex(0);
 
     this->setLayout(stack);
+
+    //-------------------------------------------------------
+    txtForFiscalC->setEnabled(false);
+
+    //setup model
+
+    db = new fornitoridatabasemanager(this);
+    model = db->getModel();
+    fornitlist->setModel(model);
+
+    fornitlist->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    QObject::connect(fornitlist, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(supplierSelected(QModelIndex)));
+    QObject::connect(newFornit, SIGNAL(clicked(bool)), this, SLOT(newSupplierClicked()));
+    QObject::connect(aggiornaFor, SIGNAL(clicked(bool)), this, SLOT(updateSupplier()));
+    QObject::connect(txtfornit, SIGNAL(textEdited(QString)), this, SLOT(searchChanged(QString)));
+
+    newOrdetail = false;
 }
 
+void FornitoriWidget::updateModel(){
+    delete model;
+    model = db->getModel();
+    fornitlist->setModel(model);
+}
+
+void FornitoriWidget::updateSupplier(){
+    QHash<QString, QString>* data= new QHash<QString, QString>();
+
+    data->insert("name", txtForName->text());
+    data->insert("surname", txtForSurname->text());
+    data->insert("ragioneSoc", txtForRSoc->text());
+    data->insert("tel", txtForTel->text());
+    data->insert("mail", txtForMail->text());
+    data->insert("piva", txtForPIva->text());
+    data->insert("address", txtForAddress->text());
+    data->insert("city", txtForCity->text());
+    data->insert("cap", txtForCap->text());
+
+    //controlla che i campi siamo tutti riempiti (quelli not null obbligatori)
+    bool res;
+
+    if(newOrdetail){
+        res = db->insertElement(txtForFiscalC->text(), data);
+    } else {
+        res = db->updateElement(txtForFiscalC->text(), data);
+    }
+
+    this->stack->setCurrentIndex(0);
+    delete data;
+    updateModel();
+
+    if(!res){
+        QMessageBox msgBox;
+        msgBox.setText("C'è stato un errore nell'inserimento dei dati");
+        msgBox.exec();
+    }
+}
+
+void FornitoriWidget::searchChanged(QString src){
+    delete model;
+    model = db->getModel(src);
+    fornitlist->setModel(model);
+}
+
+void FornitoriWidget::goToMainView(){
+    updateModel();
+    this->stack->setCurrentIndex(0);
+}
+
+void FornitoriWidget::supplierSelected(QModelIndex idx){
+    newOrdetail = false;
+    aggiornaFor->setText("AGGIORNA");
+    txtForFiscalC->setEnabled(false);
+
+    //prendiamo il codice dalla tabella
+    QString id = model->itemData(model->index(idx.row(), 0)).value(0).toString();
+    QHash<QString, QString>* data = db->getElement(id);
+
+    if(data->value("error") == "true"){
+        QMessageBox msgBox;
+        msgBox.setText("C'è stato un errore, elemento non esistente");
+        msgBox.exec();
+
+        delete data;
+        return;
+    }
+
+    //riempio i campi
+    txtForName->setText(data->value("name"));
+    txtForRSoc->setText(data->value("ragioneSoc"));
+    txtForSurname->setText(data->value("surname"));
+    txtForTel->setText(data->value("tel"));
+    txtForMail->setText(data->value("mail"));
+    txtForPIva->setText(data->value("piva"));
+    txtForFiscalC->setText(id);
+    txtForAddress->setText(data->value("address"));
+    txtForCity->setText(data->value("city"));
+    txtForCap->setText(data->value("cap"));
+
+    this->stack->setCurrentIndex(1);
+    delete data;
+}
+void FornitoriWidget::newSupplierClicked(){
+    newOrdetail = true;
+    aggiornaFor->setText("INSERISCI");
+    txtForFiscalC->setEnabled(true);
+
+    txtForName->setText("");
+    txtForRSoc->setText("");
+    txtForSurname->setText("");
+    txtForTel->setText("");
+    txtForMail->setText("");
+    txtForPIva->setText("");
+    txtForFiscalC->setText("");
+    txtForAddress->setText("");
+    txtForCap->setText("");
+    txtForCity->setText("");
+
+    this->stack->setCurrentIndex(1);
+}
 FornitoriWidget::~FornitoriWidget(){
     delete newFornit;
     delete txtfornit;

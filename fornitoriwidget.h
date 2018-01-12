@@ -17,6 +17,19 @@
 #include <QStackedLayout>
 #include <QModelIndex>
 
+
+#include <QSqlQueryModel>
+#include <QSqlQuery>
+#include <QHash>
+#include <QString>
+#include <QModelIndex>
+#include <QMap>
+
+#include <QDebug>
+#include <QMessageBox>
+
+#include "fornitoridatabasemanager.h"
+
 class FornitoriWidget : public QWidget
 {
     Q_OBJECT
@@ -27,6 +40,12 @@ public:
 signals:
 
 public slots:
+    void supplierSelected(QModelIndex idx);
+    void newSupplierClicked();
+    void updateModel();
+    void goToMainView();
+    void updateSupplier();
+    void searchChanged(QString src);
 
 private:
 	QPushButton *newFornit;
@@ -47,6 +66,12 @@ private:
     QLineEdit *txtForCap;
 
     QStackedLayout* stack;
+
+    fornitoridatabasemanager *db;
+    QSqlQueryModel *model;
+
+    bool newOrdetail;
+
 };
 
 #endif // FORNITORIWIDGET_H

@@ -17,6 +17,19 @@
 #include <QStackedLayout>
 #include <QModelIndex>
 
+
+#include <QSqlQueryModel>
+#include <QSqlQuery>
+#include <QHash>
+#include <QString>
+#include <QModelIndex>
+#include <QMap>
+
+#include <QDebug>
+#include <QMessageBox>
+
+#include "prodottidatabasemanager.h"
+
 class ProdottiWidget : public QWidget
 {
     Q_OBJECT
@@ -28,6 +41,13 @@ signals:
 
 public slots:
 
+    void productSelected(QModelIndex idx);
+    void newProductClicked();
+    void updateModel();
+    void goToMainView();
+    void updateProduct();
+    void searchChanged(QString src);
+
 private:
     QStackedLayout* stack;
 
@@ -37,13 +57,18 @@ private:
     QCheckBox *visualize;
 
     QLineEdit *txtIDProd;
-    QListView *txtDescProd;
+    QLineEdit *txtDescProd;
     QLineEdit *txtPAcquisto;
     QLineEdit *txtPVendita;
     QLineEdit *txtGiacenza;
     QPushButton *aggiornaProd;
     QPushButton *togliComm;
     QPushButton *rimettiComm;
+
+    ProdottiDatabaseManager *db;
+    QSqlQueryModel* model;
+
+    bool newORdetail;
 };
 
 #endif // PRODOTTIWIDGET_H

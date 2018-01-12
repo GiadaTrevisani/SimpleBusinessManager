@@ -1,13 +1,13 @@
-#ifndef CLIENTDATABASEMANAGER_H
-#define CLIENTDATABASEMANAGER_H
+#ifndef FORNITORIDATABASEMANAGER_H
+#define FORNITORIDATABASEMANAGER_H
 
 #include "abstractdatabasemanager.h"
 
-class ClientDatabaseManager : public AbstractDatabaseManager
+class fornitoridatabasemanager : AbstractDatabaseManager
 {
 public:
-    ClientDatabaseManager(QObject *parent = nullptr);
-    ~ClientDatabaseManager();
+    fornitoridatabasemanager(QObject *parent = nullptr);
+    ~fornitoridatabasemanager();
 
     QSqlQueryModel* getModel(QString search = "");
     QHash<QString, QString>* getElement(QString id);
@@ -19,4 +19,4 @@ signals:
 public slots:
 };
 
-#endif // CLIENTDATABASEMANAGER_H
+#endif // FORNITORIDATABASEMANAGER_H

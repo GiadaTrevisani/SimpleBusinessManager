@@ -18,7 +18,6 @@ public:
 
     virtual QSqlQueryModel* getModel(QString search = "") = 0;
     virtual QHash<QString, QString>* getElement(QString id) = 0;
-    virtual bool removeElement(QString id) = 0;
     virtual bool updateElement(QString id, QHash<QString, QString>* data) = 0;
     virtual bool insertElement(QString id, QHash<QString, QString>* data) = 0;
 
