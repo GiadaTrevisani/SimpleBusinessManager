@@ -4,6 +4,7 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
 {
     searchInvoices = new QLineEdit();
     searchInvoices->setPlaceholderText("Cerca Fattura");
+    searchInvoices->setText("");
     newButton = new QPushButton();
     QGroupBox *newInvoices = new QGroupBox(tr("Aggiungi fattura"));
     QVBoxLayout *v_lay = new QVBoxLayout();
@@ -12,7 +13,7 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
     radioClient->setChecked(true);
     radioSupplier = new QRadioButton(tr("da un fornitore"));
     radioSupplier->setChecked(false);
-    invoicesList = new QListView();
+    fatt = new QTableView();
     QGroupBox *invoicesVisualize = new QGroupBox(tr("Visualizza Fatture:"));
     checkClient = new QCheckBox(tr("Da clienti"));
     checkClient->setChecked(true);
@@ -45,11 +46,17 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
     invoicesVisualize->setLayout(clientSupplier);
     //add at widget layout the horizontal layout, list box and gruopbox with checkbox
     v_invoices->addLayout(h_invoices);
-    v_invoices->addWidget(invoicesList);
+    v_invoices->addWidget(fatt);
     v_invoices->addWidget(invoicesVisualize);
 
     //layout dettaglaito di fatture
     //LE FATTURE NON SI POSSONO ELIMINARE!!!
+    insert = new QPushButton();
+    insert->setText("Insert");
+    back = new QPushButton();
+    back->setText("<- Indietro");
+    back->setFixedSize(QSize(100,30));
+
     QLabel *fattRSocFor = new QLabel();
     QLabel *fattIndFor = new QLabel();
     QLabel *fattTelFor = new QLabel();
@@ -60,7 +67,7 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
     fattTelFor->setText("Telefono: ");
     fattMailFor->setText("Mail: ");
     fattPIvaFor->setText("Partita Iva: ");
-
+    productsTab = new QTableWidget();
     txtfattRSocFor = new QLineEdit();
     txtfattIndFor = new QLineEdit();
     txtFattTelFor = new QLineEdit();
@@ -73,7 +80,7 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
     QLabel *fattCityCli = new QLabel();
     QLabel *fattPIvaCli = new QLabel();
     QLabel *fattCFiscCli = new QLabel();
-    fatt = new QTableWidget();
+
     fattRSocCli->setText("Ragione sociale: ");
     fattIndCli->setText("Indirizzo: ");
     fattCapCli->setText("CAP: ");
@@ -186,13 +193,15 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
 
     QVBoxLayout *fattLay = new QVBoxLayout();
     fattLay->addLayout(h_fatt1);
-    fattLay->addWidget(fatt);
+    fattLay->addWidget(productsTab);
     fattLay->addLayout(h_fatt2);
 
     boxFatt->setLayout(fattLay);
 
+    v_finalFatt->addWidget(back);
     v_finalFatt->addLayout(h_fattForCli);
     v_finalFatt->addWidget(boxFatt);
+    v_finalFatt->addWidget(insert);
 
     //Maschro i Layouts da Widget per usare il metodo addWidget()
     QWidget* c0 = new QWidget(); // primo stack con la vista standard
@@ -208,6 +217,27 @@ FattureWidget::FattureWidget(QWidget *parent) : QWidget(parent)
     stack->setCurrentIndex(0);
 
     this->setLayout(stack);
+
+    //---------------------------------------
+
+    txtCodFatt->setEnabled(false);
+
+    //Setup model
+    db = new FattureDatabaseManager(this);
+    model = db->getModel();
+    fatt->setModel(model);
+
+    fatt->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    QObject::connect(fatt, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(InvoiceSelected(QModelIndex)));
+    QObject::connect(newButton, SIGNAL(clicked(bool)), this, SLOT(newInvoiceClicked()));
+    //QObject::connect(aggiorna_add, SIGNAL(clicked(bool)), this, SLOT(insertClient()));
+    QObject::connect(searchInvoices, SIGNAL(textEdited(QString)), this, SLOT(searchChanged(QString)));
+    QObject::connect(back, SIGNAL(clicked(bool)), this, SLOT(goToMainView()));
+    QObject::connect(checkClient, SIGNAL(stateChanged(int)), this, SLOT(updateModel()));
+    QObject::connect(checkSuppliers, SIGNAL(stateChanged(int)), this, SLOT(updateModel()));
+
+    newORdetail = false;
 }
 
 FattureWidget::~FattureWidget(){
@@ -215,7 +245,7 @@ FattureWidget::~FattureWidget(){
     delete newButton;
     delete radioClient;
     delete radioSupplier;
-    delete invoicesList;
+    delete productsTab;
     delete checkClient;
     delete checkSuppliers;
     delete txtFattCapCli;
@@ -230,7 +260,191 @@ FattureWidget::~FattureWidget(){
     delete txtfattRSocFor;
     delete txtFattTelFor;
     delete txtidfatt;
+    delete txtCodFatt;
     delete fatt;
 
     delete stack;
+    delete back;
+}
+
+void FattureWidget::InvoiceSelected(QModelIndex idx)
+{
+    newORdetail = false;
+    disableWidgets();
+
+    //get id from table
+    QString id = model->itemData(model->index(idx.row(), 0)).value(0).toString();
+    QHash<QString, QString>* data = db->getElement(id);
+
+    if(data->value("error") == "true"){
+        QMessageBox msgBox;
+        msgBox.setText("C'è stato un errore, elemento non esistente");
+        msgBox.exec();
+
+        delete data;
+        return;
+    }
+
+    QHash<QString, int>* prods = db->getProducts(id);
+
+    if(prods->value("error") == 1){
+        QMessageBox msgBox;
+        msgBox.setText("C'è stato un errore, prodotti fattura non esistenti");
+        msgBox.exec();
+
+        delete data;
+        delete prods;
+        return;
+    }
+
+    bool forncli = data->value("aziendaclifor").toInt();
+    if(forncli){
+        ClientDatabaseManager cdb;
+        QHash<QString, QString>* clidata = cdb.getElement(data->value("clifor"));
+
+        AziendaDatabaseManager adb;
+
+        QHash<QString, QString>* fordata = adb.getAzienda();
+
+        txtfattRSocFor->setText(fordata->value("ragioneSoc"));
+        txtfattIndFor->setText(fordata->value("address"));
+        txtFattTelFor->setText(fordata->value("tel"));
+        txtfattMailFor->setText(fordata->value("mail"));
+        txtfattPIvaFor->setText(fordata->value("piva"));
+
+        txtfattRSocCli->setText(clidata->value("ragioneSoc"));
+        txtfattIndCli->setText(clidata->value("address"));
+        txtFattCapCli->setText(clidata->value("cap"));
+        txtfattCityCli->setText(clidata->value("city"));
+        txtfattPIvaCli->setText(clidata->value("piva"));
+        txtfattCFiscCli->setText(data->value("clifor"));
+    } else {
+        ClientDatabaseManager fdb;
+        QHash<QString, QString>* fordata = fdb.getElement(data->value("clifor"));
+
+        AziendaDatabaseManager adb;
+
+        QHash<QString, QString>* clidata = adb.getAzienda();
+
+        txtfattRSocFor->setText(fordata->value("ragioneSoc"));
+        txtfattIndFor->setText(fordata->value("address"));
+        txtFattTelFor->setText(fordata->value("tel"));
+        txtfattMailFor->setText(fordata->value("mail"));
+        txtfattPIvaFor->setText(fordata->value("piva"));
+
+        txtfattRSocCli->setText(clidata->value("ragioneSoc"));
+        txtfattIndCli->setText(clidata->value("address"));
+        txtFattCapCli->setText(clidata->value("cap"));
+        txtfattCityCli->setText(clidata->value("city"));
+        txtfattPIvaCli->setText(clidata->value("piva"));
+        txtfattCFiscCli->setText(clidata->value("fiscalcode"));
+    }
+    //riempi i campi
+
+    txtCodFatt->setText(id);
+    txtDataFatt->setText(data->value("data"));
+    txtImpFatt->setText(data->value("importo"));
+    txtIvaFatt->setText(data->value("totIvaFatt"));
+    txtTotFatt->setText(data->value("totFatt"));
+
+    this->stack->setCurrentIndex(1);
+    delete data;
+}
+
+void FattureWidget::newInvoiceClicked()
+{
+    newORdetail = true;
+    enableWidgets();
+
+    this->stack->setCurrentIndex(1);
+}
+
+void FattureWidget::updateModel()
+{
+    delete model;
+    model = db->getModel(checkSuppliers->isChecked(),checkClient->isChecked(),searchInvoices->text());
+    fatt->setModel(model);
+}
+
+void FattureWidget::goToMainView()
+{
+    updateModel();
+    this->stack->setCurrentIndex(0);
+}
+
+void FattureWidget::insertInvoice()
+{
+
+}
+
+void FattureWidget::searchChanged(QString src)
+{
+    delete model;
+    model = db->getModel(checkSuppliers->isChecked(),checkClient->isChecked(),src);
+    fatt->setModel(model);
+}
+
+void FattureWidget::enableWidgets()
+{
+    insert->show();
+    txtfattRSocFor->setEnabled(true);
+    txtfattIndFor->setEnabled(true);
+    txtFattTelFor->setEnabled(true);
+    txtfattMailFor->setEnabled(true);
+    txtfattPIvaFor->setEnabled(true);
+
+    txtfattRSocCli->setEnabled(true);
+    txtfattIndCli->setEnabled(true);
+    txtFattCapCli->setEnabled(true);
+    txtfattCityCli->setEnabled(true);
+    txtfattPIvaCli->setEnabled(true);
+    txtfattCFiscCli->setEnabled(true);
+
+    txtCodFatt->setEnabled(true);
+    txtDataFatt->setEnabled(true);
+    txtImpFatt->setEnabled(true);
+    txtIvaFatt->setEnabled(true);
+    txtTotFatt->setEnabled(true);
+
+    txtfattRSocFor->setText("");
+    txtfattIndFor->setText("");
+    txtFattTelFor->setText("");
+    txtfattMailFor->setText("");
+    txtfattPIvaFor->setText("");
+
+    txtfattRSocCli->setText("");
+    txtfattIndCli->setText("");
+    txtFattCapCli->setText("");
+    txtfattCityCli->setText("");
+    txtfattPIvaCli->setText("");
+    txtfattCFiscCli->setText("");
+
+    txtCodFatt->setText("");
+    txtDataFatt->setText("");
+    txtImpFatt->setText("");
+    txtIvaFatt->setText("");
+    txtTotFatt->setText("");
+}
+
+void FattureWidget::disableWidgets()
+{
+    insert->hide();
+    txtfattRSocFor->setEnabled(false);
+    txtfattIndFor->setEnabled(false);
+    txtFattTelFor->setEnabled(false);
+    txtfattMailFor->setEnabled(false);
+    txtfattPIvaFor->setEnabled(false);
+
+    txtfattRSocCli->setEnabled(false);
+    txtfattIndCli->setEnabled(false);
+    txtFattCapCli->setEnabled(false);
+    txtfattCityCli->setEnabled(false);
+    txtfattPIvaCli->setEnabled(false);
+    txtfattCFiscCli->setEnabled(false);
+
+    txtCodFatt->setEnabled(false);
+    txtDataFatt->setEnabled(false);
+    txtImpFatt->setEnabled(false);
+    txtIvaFatt->setEnabled(false);
+    txtTotFatt->setEnabled(false);
 }

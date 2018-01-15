@@ -47,6 +47,8 @@ public slots:
     void goToMainView();
     void updateProduct();
     void searchChanged(QString src);
+    void rimuoviCommercio();
+    void immettiCommercio();
 
 private:
     QStackedLayout* stack;
@@ -64,6 +66,8 @@ private:
     QPushButton *aggiornaProd;
     QPushButton *togliComm;
     QPushButton *rimettiComm;
+
+    QPushButton *back;
 
     ProdottiDatabaseManager *db;
     QSqlQueryModel* model;

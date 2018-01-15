@@ -9,13 +9,22 @@ ProdottiDatabaseManager::~ProdottiDatabaseManager(){
 
 }
 
-QSqlQueryModel* ProdottiDatabaseManager::getModel(QString search){
+QSqlQueryModel* ProdottiDatabaseManager::getModel(bool visible, QString search){
     QSqlQueryModel* model = new QSqlQueryModel;
     if(search == ""){
-        model->setQuery("SELECT * FROM prodotti");
+        if(visible){
+            model->setQuery("SELECT * FROM prodotti");
+        } else {
+            model->setQuery("SELECT * FROM prodotti WHERE InProduzione = 1");
+        }
     } else {
-        QString src = QString("%") + search + QString("%");
-        QString qry = QString("SELECT * FROM prodotti WHERE IDProd LIKE ") + src + QString(" OR descProd LIKE ") + src + QString(" OR PacProd LIKE ") + src + QString(" OR PvenProd LIKE ") + src + QString(" OR giacProd LIKE ");
+        QString src = QString("'%") + search + QString("%'");
+        QString qry;
+        if(visible){
+            qry = QString("SELECT * FROM prodotti WHERE IDProd LIKE ") + src + QString(" OR descProd LIKE ") + src /*+ QString(" OR PacProd LIKE ") + src + QString(" OR PvenProd LIKE ") + src + QString(" OR giacProd LIKE ") + src+ QString(" )")*/ ;
+        } else {
+            qry = QString("SELECT * FROM prodotti WHERE ( InProduzione = 1 AND ( IDProd LIKE ") + src + QString(" OR descProd LIKE ") + src + QString(" ))");
+        }
         model->setQuery(qry);
     }
 
@@ -27,7 +36,7 @@ QSqlQueryModel* ProdottiDatabaseManager::getModel(QString search){
      QHash<QString, QString>* resultDictionary = new QHash<QString, QString>();
 
      QSqlQuery query;
-     query.prepare("SELECT * FROM fornitori WHERE IDProd = :id");
+     query.prepare("SELECT * FROM prodotti WHERE IDProd = :id");
      query.bindValue(":id", id);
      bool result = query.exec();
      resultDictionary->insert("id", id);
@@ -38,6 +47,7 @@ QSqlQueryModel* ProdottiDatabaseManager::getModel(QString search){
              resultDictionary->insert("purchasePrice", query.value(query.record().indexOf("PacProd")).toString());
              resultDictionary->insert("sellingPrice", query.value(query.record().indexOf("PvenProd")).toString());
              resultDictionary->insert("stock", query.value(query.record().indexOf("giacProd")).toString());
+             resultDictionary->insert("inProd", query.value(query.record().indexOf("InProduction")).toString());
          }
          resultDictionary->insert("error", "false");
      } else {
@@ -51,21 +61,31 @@ QSqlQueryModel* ProdottiDatabaseManager::getModel(QString search){
      query.prepare("UPDATE prodotti SET descripion = :descProd, purchasePrice = :PacProd, sellingPrice = :PvenProd, stock = :giacProd WHERE IDProd = :id");
      query.bindValue(":id", id);
      query.bindValue(":descProd", data->value("description"));
-     query.bindValue(":PacProd",data->value("purchasePrice"));
-     query.bindValue(":PvenProd", data->value("sellingPrice"));
-     query.bindValue(":giacProd", data->value("stock"));
+     query.bindValue(":PacProd", data->value("purchasePrice").toFloat());
+     query.bindValue(":PvenProd", data->value("sellingPrice").toFloat());
+     query.bindValue(":giacProd", data->value("stock").toInt());
 
      return query.exec();
  }
 
  bool ProdottiDatabaseManager::insertElement(QString id, QHash<QString, QString>* data){
      QSqlQuery query;
-     query.prepare("INSERT INTO prodotti (IDProd, descProd, PacProd, PvenProd, giacProd ) VALUES (:id, :description, :purchaseProce, :sellingPrice, :stock)");
+     query.prepare("INSERT INTO prodotti (IDProd, descProd, PacProd, PvenProd, giacProd, InProduzione ) VALUES (:id, :description, :purchasePrice, :sellingPrice, :stock, 1)");
      query.bindValue(":id", id);
-     query.bindValue(":descProd", data->value("description"));
-     query.bindValue(":PacProd", data->value("purchasePrice"));
-     query.bindValue(":PvenProd", data->value("sellingPrice"));
-     query.bindValue(":giacProd", data->value("stock"));
+     query.bindValue(":description", data->value("description"));
+     query.bindValue(":purchasePrice", data->value("purchasePrice").toFloat());
+     query.bindValue(":sellingPrice", data->value("sellingPrice").toFloat());
+     query.bindValue(":stock", data->value("stock").toInt());
+     return query.exec();
+ }
+
+ bool ProdottiDatabaseManager::setProduction(QString id, int inORout)
+ {
+     QSqlQuery query;
+     query.prepare("UPDATE prodotti SET InProduzione = :inProd WHERE IDProd = :id");
+     query.bindValue(":id", id);
+     query.bindValue(":inProd", inORout);
+
      return query.exec();
  }
 

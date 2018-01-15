@@ -53,6 +53,7 @@ private:
     QTableView *fornitlist;
 
     QPushButton *aggiornaFor;
+    QPushButton *back;
 
     QLineEdit *txtForName;
     QLineEdit *txtForRSoc;
@@ -67,7 +68,7 @@ private:
 
     QStackedLayout* stack;
 
-    fornitoridatabasemanager *db;
+    FornitoriDatabaseManager *db;
     QSqlQueryModel *model;
 
     bool newOrdetail;

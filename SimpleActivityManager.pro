@@ -35,7 +35,9 @@ SOURCES += \
     abstractdatabasemanager.cpp \
     clientdatabasemanager.cpp \
     fornitoridatabasemanager.cpp \
-    prodottidatabasemanager.cpp
+    prodottidatabasemanager.cpp \
+    fatturedatabasemanager.cpp \
+    aziendadatabasemanager.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -47,7 +49,9 @@ HEADERS += \
     abstractdatabasemanager.h \
     clientdatabasemanager.h \
     fornitoridatabasemanager.h \
-    prodottidatabasemanager.h
+    prodottidatabasemanager.h \
+    fatturedatabasemanager.h \
+    aziendadatabasemanager.h
 
 FORMS += \
         mainwindow.ui

@@ -14,7 +14,6 @@ class AbstractDatabaseManager : public QObject //Classe Virtuale pura
     Q_OBJECT
 public:
     explicit AbstractDatabaseManager(QObject *parent = nullptr);
-    //virtual ~AbstractDatabaseManager() = 0;
 
     virtual QSqlQueryModel* getModel(QString search = "") = 0;
     virtual QHash<QString, QString>* getElement(QString id) = 0;

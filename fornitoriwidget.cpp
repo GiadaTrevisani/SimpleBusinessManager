@@ -5,6 +5,7 @@ FornitoriWidget::FornitoriWidget(QWidget *parent) : QWidget(parent)
     newFornit = new QPushButton();
     txtfornit = new QLineEdit();
     txtfornit->setPlaceholderText("Cerca Fornitore");
+    txtfornit->setText("");
     fornitlist = new QTableView();
     QHBoxLayout *h_fornit = new QHBoxLayout();
     QVBoxLayout *v_fornit = new QVBoxLayout();
@@ -108,6 +109,11 @@ FornitoriWidget::FornitoriWidget(QWidget *parent) : QWidget(parent)
     h_divideFor->addLayout(v_divideFor1);
     h_divideFor->addLayout(v_divideFor2);
 
+    back = new QPushButton();
+    back->setText("<- Indietro");
+    back->setFixedSize(QSize(100,30));
+    v_finalFor->addWidget(back);
+
     v_finalFor->addLayout(h_divideFor);
     v_finalFor->addWidget(aggiornaFor);
 
@@ -131,8 +137,8 @@ FornitoriWidget::FornitoriWidget(QWidget *parent) : QWidget(parent)
 
     //setup model
 
-    db = new fornitoridatabasemanager(this);
-    model = db->getModel();
+    db = new FornitoriDatabaseManager(this);
+    model = db->getModel(txtfornit->text());
     fornitlist->setModel(model);
 
     fornitlist->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -141,13 +147,14 @@ FornitoriWidget::FornitoriWidget(QWidget *parent) : QWidget(parent)
     QObject::connect(newFornit, SIGNAL(clicked(bool)), this, SLOT(newSupplierClicked()));
     QObject::connect(aggiornaFor, SIGNAL(clicked(bool)), this, SLOT(updateSupplier()));
     QObject::connect(txtfornit, SIGNAL(textEdited(QString)), this, SLOT(searchChanged(QString)));
+    QObject::connect(back, SIGNAL(clicked(bool)), this, SLOT(goToMainView()));
 
     newOrdetail = false;
 }
 
 void FornitoriWidget::updateModel(){
     delete model;
-    model = db->getModel();
+    model = db->getModel(txtfornit->text());
     fornitlist->setModel(model);
 }
 
@@ -262,4 +269,5 @@ FornitoriWidget::~FornitoriWidget(){
     delete txtForRSoc;
     delete txtForTel;
     delete stack;
+    delete back;
 }

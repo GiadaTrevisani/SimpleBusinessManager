@@ -13,8 +13,15 @@
 #include <QRadioButton>
 #include <QListView>
 #include <QTableWidget>
+#include <QTableView>
 #include <QStackedLayout>
 #include <QModelIndex>
+#include <QMessageBox>
+
+#include <fatturedatabasemanager.h>
+#include <clientdatabasemanager.h>
+#include <fornitoridatabasemanager.h>
+#include <aziendadatabasemanager.h>
 
 class FattureWidget : public QWidget
 {
@@ -26,15 +33,23 @@ public:
 signals:
 
 public slots:
+    void InvoiceSelected(QModelIndex idx);
+    void newInvoiceClicked();
+    void updateModel();
+    void goToMainView();
+    void insertInvoice();
+    void searchChanged(QString src);
 
 private:
+    void enableWidgets();
+    void disableWidgets();
     QLineEdit *searchInvoices;
     QPushButton *newButton;
 
     QRadioButton *radioClient;
     QRadioButton *radioSupplier;
 
-    QListView *invoicesList;
+    QTableWidget *productsTab;
 
     QCheckBox *checkClient;
     QCheckBox *checkSuppliers;
@@ -45,7 +60,10 @@ private:
     QLineEdit *txtfattMailFor;
     QLineEdit *txtfattPIvaFor;
 
-    QTableWidget *fatt;
+    QTableView *fatt;
+
+    QPushButton *back;
+    QPushButton *insert;
 
     QLineEdit *txtidfatt;
     QLineEdit *txtfattRSocCli;
@@ -62,6 +80,11 @@ private:
     QLineEdit *txtTotFatt;
 
     QStackedLayout* stack;
+
+    FattureDatabaseManager* db;
+    QSqlQueryModel* model;
+
+    bool newORdetail;
 };
 
 #endif // FATTUREWIDGET_H

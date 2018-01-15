@@ -5,6 +5,7 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
     newProduct = new QPushButton();
     txtProduct = new QLineEdit();
     txtProduct->setPlaceholderText("Cerca Prodotto");
+    txtProduct->setText("");
     productList = new QTableView();
     QHBoxLayout *h_product = new QHBoxLayout();
     QVBoxLayout *v_product = new QVBoxLayout();
@@ -50,7 +51,7 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
 
     aggiornaProd->setText("AGGIORNA");
     togliComm->setText("TOGLI DAL COMMRCIO");
-    rimettiComm->setText("RIMETTI IN COMMERCIO");
+    rimettiComm->setText("IMMETTI IN COMMERCIO");
     infoProd->setText("Informazioni: ");
     IDProd->setText("Codice: ");
     descProd->setText("Descrizione: ");
@@ -83,12 +84,20 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
     h_finalProd->addLayout(v_divideProd1);
     h_finalProd->addLayout(v_divideProd2);
 
+    back = new QPushButton();
+    back->setText("<- Indietro");
+    back->setFixedSize(QSize(100,30));
+
+    QVBoxLayout *last_v = new QVBoxLayout();
+    last_v->addWidget(back);
+    last_v->addLayout(h_finalProd);
+
     //Maschro i Layouts da Widget per usare il metodo addWidget()
     QWidget* p0 = new QWidget(); // primo stack con la vista standard
     p0->setLayout(v_product);
 
     QWidget* p1 = new QWidget(); // secondo stack con la vista dettaglio del cliente
-    p1->setLayout(h_finalProd);
+    p1->setLayout(last_v);
 
     stack = new QStackedLayout();
     stack->addWidget(p0);
@@ -102,7 +111,7 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
 
     //setup model
     db = new ProdottiDatabaseManager(this);
-    model = db->getModel();
+    model = db->getModel(visualize->isChecked(), txtProduct->text());
     productList->setModel(model);
 
     productList->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -111,6 +120,10 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
     QObject::connect(newProduct, SIGNAL(clicked(bool)), this, SLOT(newProductClicked()));
     QObject::connect(aggiornaProd, SIGNAL(clicked(bool)), this, SLOT(updateProduct()));
     QObject::connect(txtProduct, SIGNAL(textEdited(QString)), this, SLOT(searchChanged(QString)));
+    QObject::connect(back, SIGNAL(clicked(bool)), this, SLOT(goToMainView()));
+    QObject::connect(togliComm, SIGNAL(clicked(bool)), this, SLOT(rimuoviCommercio()));
+    QObject::connect(rimettiComm, SIGNAL(clicked(bool)), this, SLOT(immettiCommercio()));
+    QObject::connect(visualize, SIGNAL(stateChanged(int)), this, SLOT(updateModel()));
 
     newORdetail = false;
 
@@ -120,7 +133,7 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
 void ProdottiWidget::updateModel(){
     //model->query().exec(); // aggiorna la vista
     delete model;
-    model = db->getModel();
+    model = db->getModel(visualize->isChecked(), txtProduct->text());
     productList->setModel(model);
 }
 
@@ -154,20 +167,43 @@ void ProdottiWidget::updateProduct(){
 
 void ProdottiWidget::searchChanged(QString src){
     delete model;
-    model = db->getModel(src);
+    model = db->getModel(visualize->isChecked(), src);
     productList->setModel(model);
+}
+
+void ProdottiWidget::rimuoviCommercio()
+{
+    QString id = txtIDProd->text();
+
+    db->setProduction(id, 0);
+
+    QMessageBox msgBox;
+    msgBox.setText("Prodotto rimosso dal commercio");
+    msgBox.exec();
+}
+
+void ProdottiWidget::immettiCommercio()
+{
+    QString id = txtIDProd->text();
+
+    db->setProduction(id, 1);
+
+    QMessageBox msgBox;
+    msgBox.setText("Prodotto immesso nel commercio");
+    msgBox.exec();
 }
 
 void ProdottiWidget::goToMainView(){
     updateModel();
     this->stack->setCurrentIndex(0);
-
 }
 
 void ProdottiWidget::productSelected(QModelIndex idx){
     newORdetail = false;
     aggiornaProd->setText("AGGIORNA");
     txtIDProd->setEnabled(false);
+    rimettiComm->show();
+    togliComm->show();
 
     //get id from table
     QString id = model->itemData(model->index(idx.row(), 0)).value(0).toString();
@@ -182,6 +218,7 @@ void ProdottiWidget::productSelected(QModelIndex idx){
         return;
     }
     //riempi i campi
+    txtIDProd->setText(id);
     txtDescProd->setText(data->value("description"));
     txtPAcquisto->setText(data->value("purchasePrice"));
     txtPVendita->setText(data->value("sellingPrice"));
@@ -196,7 +233,10 @@ void ProdottiWidget::newProductClicked(){
     newORdetail = true;
     aggiornaProd->setText("Inserisci");
     txtIDProd->setEnabled(true);
+    rimettiComm->hide();
+    togliComm->hide();
 
+    txtIDProd->setText("");
     txtDescProd->setText("");
     txtPAcquisto->setText("");
     txtPVendita->setText("");
@@ -219,4 +259,5 @@ ProdottiWidget::~ProdottiWidget(){
     delete aggiornaProd;
     delete togliComm;
     delete rimettiComm;
+    delete back;
 }

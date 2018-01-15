@@ -5,6 +5,7 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
     newClient = new QPushButton();
     txtCerca = new QLineEdit();
     txtCerca->setPlaceholderText("Cerca Cliente");
+    txtCerca->setText("");
     clientTab = new QTableView();
     QHBoxLayout *h_client = new QHBoxLayout();
     QVBoxLayout *v_client = new QVBoxLayout();
@@ -31,6 +32,7 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
     QLabel *clientCity = new QLabel();
     QLabel *clientCap = new QLabel();
     aggiorna_add = new QPushButton();
+    back = new QPushButton();
     txtclientName = new QLineEdit();
     txtragSoc = new QLineEdit();
     txtclientSurname = new QLineEdit();
@@ -67,6 +69,8 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
     clientCity->setText("Città: ");
     clientCap->setText("Cap: ");
     aggiorna_add->setText("AGGIORNA");
+    back->setText("<- Indietro");
+    back->setFixedSize(QSize(100,30));
 
     h_ragSoc->addWidget(clientRagSoc);
     h_ragSoc->addWidget(txtragSoc);
@@ -107,6 +111,7 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
     h_divide->addLayout(v_divide1);
     h_divide->addLayout(v_divide2);
 
+    v_finalClient->addWidget(back);
     v_finalClient->addLayout(h_divide);
     v_finalClient->addWidget(aggiorna_add);
 
@@ -133,7 +138,7 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
 
     //Setup model
     db = new ClientDatabaseManager(this);
-    model = db->getModel();
+    model = db->getModel(txtCerca->text());
     clientTab->setModel(model);
 
     clientTab->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -142,6 +147,7 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
     QObject::connect(newClient, SIGNAL(clicked(bool)), this, SLOT(newClientClicked()));
     QObject::connect(aggiorna_add, SIGNAL(clicked(bool)), this, SLOT(updateClient()));
     QObject::connect(txtCerca, SIGNAL(textEdited(QString)), this, SLOT(searchChanged(QString)));
+    QObject::connect(back, SIGNAL(clicked(bool)), this, SLOT(goToMainView()));
 
     newORdetail = false;
 }
@@ -149,7 +155,7 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
 void ClientWidget::updateModel(){
     //model->query().exec(); // aggiorna la vista
     delete model;
-    model = db->getModel();
+    model = db->getModel(txtCerca->text());
     clientTab->setModel(model);
 }
 
@@ -268,4 +274,5 @@ ClientWidget::~ClientWidget(){
     delete txtragSoc;
 
     delete model;
+    delete back;
 }

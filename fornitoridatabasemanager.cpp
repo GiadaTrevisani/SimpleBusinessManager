@@ -1,22 +1,22 @@
 #include "fornitoridatabasemanager.h"
 
-fornitoridatabasemanager::fornitoridatabasemanager(QObject *parent) : AbstractDatabaseManager(parent)
+FornitoriDatabaseManager::FornitoriDatabaseManager(QObject *parent) : AbstractDatabaseManager(parent)
 {
 
 }
 
-fornitoridatabasemanager::~fornitoridatabasemanager()
+FornitoriDatabaseManager::~FornitoriDatabaseManager()
 {
 
 }
 
-QSqlQueryModel* fornitoridatabasemanager::getModel(QString search){
+QSqlQueryModel* FornitoriDatabaseManager::getModel(QString search){
    QSqlQueryModel* model = new QSqlQueryModel;
    if(search == ""){
        model->setQuery("SELECT * FROM fornitori");
    } else {
-       QString src = QString("%") + search + QString("%");
-       QString qry = QString("SELECT * FROM fornitori WHERE FCodeFor LIKE ") + src + QString(" OR nameFor LIKE ") + src + QString(" OR surnameFor LIKE ") + src + QString(" OR RSocFor LIKE ") + src + QString(" OR telFor LIKE ") + src + QString(" OR mailFor LIKE ") + src + QString(" OR pIVAFor LIKE ") + src + QString(" OR addressFor LIKE ") + src + QString(" OR cityFor LIKE ") + src + QString(" OR CAPFor LIKE ");
+       QString src = QString("'%") + search + QString("%'");
+       QString qry = QString("SELECT * FROM fornitori WHERE FCodeFor LIKE ") + src + QString(" OR nameFor LIKE ") + src + QString(" OR surnameFor LIKE ") + src + QString(" OR RSocFor LIKE ") + src + QString(" OR telFor LIKE ") + src + QString(" OR mailFor LIKE ") + src + QString(" OR pIvaFor LIKE ") + src + QString(" OR addressFor LIKE ") + src + QString(" OR cityFor LIKE ") + src + QString(" OR CAPFor LIKE ") + src;
        model->setQuery(qry);
    }
 
@@ -24,7 +24,7 @@ QSqlQueryModel* fornitoridatabasemanager::getModel(QString search){
 
 }
 
-QHash<QString, QString>* fornitoridatabasemanager::getElement(QString id){
+QHash<QString, QString>* FornitoriDatabaseManager::getElement(QString id){
     QHash<QString, QString>* resultDictionary = new QHash<QString, QString>();
 
     QSqlQuery query;
@@ -51,7 +51,7 @@ QHash<QString, QString>* fornitoridatabasemanager::getElement(QString id){
     return resultDictionary;
 }
 
-bool fornitoridatabasemanager::updateElement(QString id, QHash<QString, QString>* data){
+bool FornitoriDatabaseManager::updateElement(QString id, QHash<QString, QString>* data){
     QSqlQuery query;
     query.prepare("UPDATE fornitori SET nameFor = :name, surnameFor = :surname, RSocFor = :ragioneSoc, telFor = :tel, mailFor = :mail, pIvaFor = :piva, addressFor = :address, cityFor = :city, CAPFor = :cap WHERE FCodeFor = :id");
     query.bindValue(":id", id);
@@ -68,7 +68,7 @@ bool fornitoridatabasemanager::updateElement(QString id, QHash<QString, QString>
     return query.exec();
 }
 
-bool fornitoridatabasemanager::insertElement(QString id, QHash<QString, QString>* data){
+bool FornitoriDatabaseManager::insertElement(QString id, QHash<QString, QString>* data){
     QSqlQuery query;
     query.prepare("INSERT INTO fornitori (FCodeFor, nameFor, surnameFor, RSocFor, telFor, mailFor, pIvaFor, addressFor, cityFor, CAPFor) VALUES (:id, :name, :surname, :ragioneSoc, :tel, :mail, :piva, :address, :city, :cap)");
     query.bindValue(":id", id);

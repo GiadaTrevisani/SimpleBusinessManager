@@ -51,6 +51,7 @@ private:
     QTableView *clientTab;
 
     QPushButton *aggiorna_add;
+    QPushButton *back;
 
     QLineEdit *txtclientName;
     QLineEdit *txtragSoc;
