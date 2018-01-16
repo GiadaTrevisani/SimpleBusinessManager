@@ -2,6 +2,25 @@
 
 ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
 {
+    /*
+     * in questa classe creiamo la window principale dei clienti, dove io mi trovo una line edit cerca
+     * dove inserendo dei caratteri, con il connect posso cercarli dentro il mio database (guarda query
+     * nel metodo getModel nella classe ClientiDatabaseManager) e visualizzarli nella client tab subito sotto.
+     * se non cerco niente, nella tabella ho tutti i miei elementi, dal primo all'ultimo.
+     * in alto a destra di fianco alla line edit cerca ho il bottone new, cliccando li sopra posso
+     * aggiungere al database un cliente che verra visualizzato nella tableView appena inserito.
+     * Cliccando sul tasto new si apre una finestra sopra quella attuale di clienti (reso possibile attraverso
+     * il comadno stack e inserendo iol comando setcuirrentindex al widget del mio new) dove io posso aggiungere
+     * un cliente (tutto specificato nella funzione NewClientClicked).
+     * sotto invece nella table view invece ho l'elenco di tutti i miei clienti della line edit ricerca
+     * e doppiocliccando su un elemento si aggiunge una finestra di dettaglio sopra quella dei clienti (comando stack->setcurrentindex)
+     * dove viene visualizzato ogni elemento del cliente cliccato. c'è anche la possibilità di modifica. in pratica
+     * la finestra di dettaglio è la stessa che usiamo per un nuovo cliente, solo che nella new il bottone
+     * per salvare si chiama AGGIUNGI e le line edit sono vuote, invece nell'update il bottone si chiama
+     * AGGIORNA e nelle line edit ci sono i campi riempiti e per aggiornarli basta scriverci sopra e cliccare sul bottone.
+     * In più se ci sono dei campi che non si possono modificare nel codice inseriamo il comando setenable false.
+     *
+     */
     newClient = new QPushButton();
     txtCerca = new QLineEdit();
     txtCerca->setPlaceholderText("Cerca Cliente");
@@ -15,6 +34,13 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
     h_client->addWidget(newClient);
     v_client->addLayout(h_client);
     v_client->addWidget(clientTab);
+
+    /*
+     * da qua in poi inseriamo il layout della finestra di dettaglio che si aprirà
+     * con il comando stack->setcurrentIndex al doppioclick di un elemento di un determinato
+     * cliente. in questa finestra è possibile modificare un cliente riempioendo le line
+     * edit con queello che si vuole cambiare e cliccare su aggiorna
+     */
 
     //secondo layout visualizzazione in dettagilio di clienti
     QLabel *infoClient = new QLabel();
@@ -142,16 +168,49 @@ ClientWidget::ClientWidget(QWidget *parent) : QWidget(parent)
     clientTab->setModel(model);
 
     clientTab->setSelectionBehavior(QAbstractItemView::SelectRows);
+    clientTab->setSelectionMode(QAbstractItemView::SingleSelection);
+    /*
+     * di seguito vengono definiti i connect, cioè ad un dato segnale corrisponde
+     * una risposta o invocazione di un metodo*/
+    /*
+     * 1° connect se si doppioclicca un cliente nella tabella dei clienti viene
+     * chiamato il metodo clientSelected che aprirà attraverso lo stack la finestra di
+     * dettaglio su quel cliente.
+     */
 
     QObject::connect(clientTab, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(clientSelected(QModelIndex)));
+    /*
+     * 2°connect: se io clicco su il bottone newclient in questa finestra di fianco alla search line edit
+     * mi chiama la funzione newClientClicked dove io posso inserire un nuovo cliente. nel caso io mi sia sbagliata
+     * a cliccare su new è possibile tornare insietro senza modificare niente.
+     */
     QObject::connect(newClient, SIGNAL(clicked(bool)), this, SLOT(newClientClicked()));
+    /*
+     *3° connect: se siamo nell finestra di dettaglio e vogliamo aggiornare un cliente
+     * basta riscrivere sopra il campo che voglio cambiare il nuovo valore e cliccare
+     * su aggiorna. quando clicco l'evento connect chiama la funzione updateClient
+     * dove va ad aggiornare il database attraverso la query fornita dalla funzione
+     */
     QObject::connect(aggiorna_add, SIGNAL(clicked(bool)), this, SLOT(updateClient()));
+    /*
+     *4°connect: se cerchiamo un cliente nella line edit cerca, ad ogni carattere che inseriamo
+     * viene chiamato il metodo serachChanged dove si fa una query al database che cerca parole
+     * simili ai caratteri inseriti tra tutti gli alementi qstring dei clienti(tutti in questpo caso)
+     */
     QObject::connect(txtCerca, SIGNAL(textEdited(QString)), this, SLOT(searchChanged(QString)));
+    /*
+     *5° connect: se clicco il pulsante back ("->") chiama la funzione goToMainView e torna
+     * attraverso il comando stack_>setCurrentIndex alla finestra principale
+     */
     QObject::connect(back, SIGNAL(clicked(bool)), this, SLOT(goToMainView()));
 
     newORdetail = false;
 }
 
+
+/*
+ * deallochiamo il model vecchio e ne facciamo uno nuovo creando un nuovo database
+ */
 void ClientWidget::updateModel(){
     //model->query().exec(); // aggiorna la vista
     delete model;
@@ -159,6 +218,9 @@ void ClientWidget::updateModel(){
     clientTab->setModel(model);
 }
 
+/*
+ * creiamo un dizionario di nome data vuoto e inseriamo le stringhe dentro le edit line
+ */
 void ClientWidget::updateClient(){
     QHash<QString, QString>* data = new QHash<QString, QString>();
 
@@ -191,6 +253,10 @@ void ClientWidget::updateClient(){
     }
 }
 
+
+/*
+ * dealloco anche qui il model e poi lo rialloco con il database
+ */
 void ClientWidget::searchChanged(QString src)
 {
     delete model;
@@ -198,11 +264,19 @@ void ClientWidget::searchChanged(QString src)
     clientTab->setModel(model);
 }
 
+/*
+ * chiamo la funzione update model che dealloca e rialloca tutto il database
+ *e poi ritorno alla finestra principale
+ */
 void ClientWidget::goToMainView(){
     updateModel();
     this->stack->setCurrentIndex(0);
 }
 
+/*
+ * newORdetail se è vero sono nella modalità nuovo cliente e quindi cambiano i bottoni
+ * e le line edit
+ */
 void ClientWidget::clientSelected(QModelIndex idx){
     newORdetail = false;
     aggiorna_add->setText("AGGIORNA");

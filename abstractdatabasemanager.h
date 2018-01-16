@@ -9,6 +9,10 @@
 #include <QSqlRecord>
 #include <QDebug>
 
+/*
+ * creiamo una classe astratta (padre dove specifichiamo i metodi che devono implementare
+ * le classi figlie. tutte le classi figlie implementano questi metodi.
+ */
 class AbstractDatabaseManager : public QObject //Classe Virtuale pura
 {
     Q_OBJECT

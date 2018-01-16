@@ -115,6 +115,7 @@ ProdottiWidget::ProdottiWidget(QWidget *parent) : QWidget(parent)
     productList->setModel(model);
 
     productList->setSelectionBehavior(QAbstractItemView::SelectRows);
+    productList->setSelectionMode(QAbstractItemView::SingleSelection);
 
     QObject::connect(productList, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(productSelected(QModelIndex)));
     QObject::connect(newProduct, SIGNAL(clicked(bool)), this, SLOT(newProductClicked()));

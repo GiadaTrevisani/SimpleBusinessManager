@@ -28,6 +28,10 @@
 
 #include "clientdatabasemanager.h"
 
+/*
+ * in questa classe definiamo le funzioni e Widget che andremo ad implementare
+ * nella classe ClientiWidget.cpp attraverso i connect.
+ */
 class ClientWidget : public QWidget
 {
     Q_OBJECT

@@ -1,5 +1,15 @@
 #include "fornitoriwidget.h"
 
+/*
+ * il layout dei fornitori è lo stesso dei clienti e dei prodotti, e anche
+ * i bottoni connessi e la line edit connesse a funzioni che faranno
+ * query al database sono le stesse ma eseguite per i fornitori.
+ * uguale il bottone new e il doppio click su un elemento della tabella
+ * che apre la lista di dettaglio dei fornitori e si può aggiornare la tabella.
+ * tuttavia al contrario dei clienti, nei fornitori i campi partita iva e
+ * ragione sociale sono obbligatori perchè se un fornitore mi fa una fattura
+ * deve per forza vendere dei prodotti e quindi anche avere una ragione sociale
+ */
 FornitoriWidget::FornitoriWidget(QWidget *parent) : QWidget(parent)
 {
     newFornit = new QPushButton();
@@ -142,6 +152,7 @@ FornitoriWidget::FornitoriWidget(QWidget *parent) : QWidget(parent)
     fornitlist->setModel(model);
 
     fornitlist->setSelectionBehavior(QAbstractItemView::SelectRows);
+    fornitlist->setSelectionMode(QAbstractItemView::SingleSelection);
 
     QObject::connect(fornitlist, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(supplierSelected(QModelIndex)));
     QObject::connect(newFornit, SIGNAL(clicked(bool)), this, SLOT(newSupplierClicked()));

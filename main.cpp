@@ -8,6 +8,12 @@
 
 int main(int argc, char *argv[])
 {
+    /*
+     * in questa classe, che esiste per tutta la durata del programma è definito
+     * il database con nome db, creato con sqlite3 dove abbiamo creato anche le tabelle
+     * con il comando INSERT TABLE IF NOT EXISTS, e qui nella classe main viene implementato
+     * appunto questo database
+     */
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("database.db");
     db.open();
@@ -30,6 +36,12 @@ int main(int argc, char *argv[])
     QSqlQuery prodfatt("CREATE TABLE IF NOT EXISTS prodfatt( idfatt TEXT, idprod TEXT, quant INTEGER, FOREIGN KEY(idfatt) REFERENCES fatture(codFatt), FOREIGN KEY(idprod) REFERENCES fatture(IDProd), PRIMARY KEY(idfatt, idprod) )");
     prodfatt.exec();
 
+    /*
+     * creiamo anche la nostra azienda. la prima volta che apriamo il programma dopo averlo
+     * scaricato si avranno valori di default, invece una volta inseriti è possibile anche aggiornarli,
+     * e se si esce dal programma e si rientra in un secondo momento i dati dell'azienda sono memorizzati
+     * nel database, attraverso il comando insert.
+     */
     AziendaDatabaseManager adb;
 
     if(!adb.isPresent()){

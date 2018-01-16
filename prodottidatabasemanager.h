@@ -18,6 +18,9 @@ public:
     bool insertElement(QString id, QHash<QString, QString> *data);
 
     bool setProduction(QString id, int inORout);
+    QSqlQueryModel *getModelGiac();
+
+    bool modGiac(QString id, int n);
 };
 
 #endif // PRODOTTIDATABASEMANAGER_H

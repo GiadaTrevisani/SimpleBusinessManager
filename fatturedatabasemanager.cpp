@@ -70,7 +70,7 @@ bool FattureDatabaseManager::updateElement(QString id, QHash<QString, QString>* 
     QSqlQuery query;
     query.prepare("UPDATE fatture SET dataFatt = :data, importoFatt = :importo, totIvaFatt = :totIvaFatt, totFatt = :totFatt, idCliFor = :clifor, aziendaForOrCli = :aziendaclifor WHERE codFatt = :id");
     query.bindValue(":id", id);
-    query.bindValue(":data", QDate::fromString(data->value("data")));
+    query.bindValue(":data", QDate::fromString(data->value("data"), "dd/MM/yyyy"));
     query.bindValue(":importo", data->value("importo").toFloat());
     query.bindValue(":totIvaFatt", data->value("totIvaFatt").toFloat());
     query.bindValue(":totFatt", data->value("totFatt").toFloat());
@@ -82,9 +82,9 @@ bool FattureDatabaseManager::updateElement(QString id, QHash<QString, QString>* 
 
 bool FattureDatabaseManager::insertElement(QString id, QHash<QString, QString>* data){
     QSqlQuery query;
-    query.prepare("INSERT INTO fatture (codFatt, dataFatt, importoFatt, totIvaFatt, totFatt, idCliFor, aziendaForOrCli) VALUES (:id, :data, :importo, :totIvaFatt, :totFatt, :clidor, :aziendaclifor)");
+    query.prepare("INSERT INTO fatture (codFatt, dataFatt, importoFatt, totIvaFatt, totFatt, idCliFor, aziendaForOrCli) VALUES (:id, :data, :importo, :totIvaFatt, :totFatt, :clifor, :aziendaclifor)");
     query.bindValue(":id", id);
-    query.bindValue(":data", QDate::fromString(data->value("data")));
+    query.bindValue(":data", QDate::fromString(data->value("data"), "dd/MM/yyyy"));
     query.bindValue(":importo", data->value("importo").toFloat());
     query.bindValue(":totIvaFatt", data->value("totIvaFatt").toFloat());
     query.bindValue(":totFatt", data->value("totFatt").toFloat());
@@ -124,9 +124,6 @@ QHash<QString, int> *FattureDatabaseManager::getProducts(QString id)
         while (query.next()) {
             resultDictionary->insert(query.value(query.record().indexOf("idprod")).toString(), query.value(query.record().indexOf("quant")).toInt());
         }
-        resultDictionary->insert("error", 0);
-    } else {
-        resultDictionary->insert("error", 1);
     }
     return resultDictionary;
 }

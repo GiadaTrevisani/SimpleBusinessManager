@@ -3,6 +3,14 @@
 
 #include "abstractdatabasemanager.h"
 
+
+/*
+ * includiamo la classe astratta, quindi dovremo implementare
+ * i metodi e nel caso in cui ne volessimo aggiungere un alto
+ * possiamo farlo, ma sarà specificato in questa classe
+ * non nella classe astratta. quindi le altre classi non possono
+ * definire questo metodo, ma implementarne uno nuovo.
+ */
 class ClientDatabaseManager : public AbstractDatabaseManager
 {
 public:

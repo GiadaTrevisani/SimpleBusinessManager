@@ -12,16 +12,18 @@ ClientDatabaseManager::~ClientDatabaseManager()
 
 QSqlQueryModel* ClientDatabaseManager::getModel(QString search){
     QSqlQueryModel *model = new QSqlQueryModel;
+    /*
+     * questo metodo ci restitusce il model della stringa cerca che gli abbiamo passato.
+     * Se nella line edit (txtcerca) non c'è scritto niente, allora il programma fa una query
+     * al database selezionando tutte le righe della tabella clienti.
+     * se invece nella txtCerca abbiamo inserito qualcosa, ogni volta che inseriamo un carattere
+     * lui fa ogni volta una query per cercare in tutti gli elementi di quella tabella, carattere
+     * per carattere se esiste un elemento con quel nome. Se trova qualcosa che ci assomiglia allora
+     * lo fa visualizzare sullo schermo.
+     */
     if(search == ""){
         model->setQuery("SELECT * FROM clienti");
     } else {
-//        QSqlQuery query;
-//        QString src = QString("%") + search + QString("%");
-//        query.prepare("SELECT * FROM clienti WHERE ClientFiscalC LIKE ? OR clientName LIKE ? OR clientSurname LIKE ? OR clientRSoc LIKE ? OR clientTel LIKE ? OR mailClient LIKE ? OR pIvaClient LIKE ? OR addressClient LIKE ? OR cityClient LIKE ? OR CAPClient LIKE ?");
-//        for(int i = 0; i< 10; i++){
-//            query.addBindValue(src);
-//        }
-//        model->setQuery(query);
         QString src = QString("'%") + search + QString("%'");
         QString qry = QString("SELECT * FROM clienti WHERE ClientFiscalC LIKE ") + src + QString(" OR clientName LIKE ") + src + QString(" OR clientSurname LIKE ") + src + QString(" OR clientRSoc LIKE ") + src + " OR clientTel LIKE " + src + " OR mailClient LIKE "+ src +" OR pIvaClient LIKE "+ src +" OR addressClient LIKE "+src+" OR cityClient LIKE "+src+" OR CAPClient LIKE "+src;
         model->setQuery(qry);
@@ -58,6 +60,10 @@ QHash<QString, QString>* ClientDatabaseManager::getElement(QString id){
 }
 
 bool ClientDatabaseManager::updateElement(QString id, QHash<QString, QString>* data){
+    /*
+     * in questo metodo, quando viene chiamato nella classe ClientWidget viene passato anche l'id e il dizionario
+     * della nostra tabella clienti e poi viene eseguito l'aggiornamento tramite delle query fatte al database.
+     */
     QSqlQuery query;
     query.prepare("UPDATE clienti SET clientName = :name, clientSurname = :surname, clientRSoc = :ragioneSoc, clientTel = :tel, mailClient = :mail, pIvaClient = :piva, addressClient = :address, cityClient = :city, CAPClient = :cap WHERE ClientFiscalC = :id");
     query.bindValue(":id", id);
@@ -75,6 +81,10 @@ bool ClientDatabaseManager::updateElement(QString id, QHash<QString, QString>* d
 }
 
 bool ClientDatabaseManager::insertElement(QString id, QHash<QString, QString>* data){
+    /*
+     * in questo metodo inseriamo un elemento, cioè connettendo qusto metodo con un segnale (nella classe ClientWidget.cpp)
+     * facciamo una query al database di inserimento dei valori passati come dizionario nei parametri della funzione
+     */
     QSqlQuery query;
     query.prepare("INSERT INTO clienti (ClientFiscalC, clientName, clientSurname, clientRSoc, clientTel, mailClient, pIvaClient, addressClient, cityClient, CAPClient) VALUES (:id, :name, :surname, :ragioneSoc, :tel, :mail, :piva, :address, :city, :cap)");
     query.bindValue(":id", id);

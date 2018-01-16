@@ -58,7 +58,7 @@ QSqlQueryModel* ProdottiDatabaseManager::getModel(bool visible, QString search){
 
  bool ProdottiDatabaseManager::updateElement(QString id, QHash<QString, QString>* data){
      QSqlQuery query;
-     query.prepare("UPDATE prodotti SET descripion = :descProd, purchasePrice = :PacProd, sellingPrice = :PvenProd, stock = :giacProd WHERE IDProd = :id");
+     query.prepare("UPDATE prodotti SET descProd = :descProd, PacProd = :PacProd, PvenProd = :PvenProd, giacProd = :giacProd WHERE IDProd = :id");
      query.bindValue(":id", id);
      query.bindValue(":descProd", data->value("description"));
      query.bindValue(":PacProd", data->value("purchasePrice").toFloat());
@@ -87,5 +87,36 @@ QSqlQueryModel* ProdottiDatabaseManager::getModel(bool visible, QString search){
      query.bindValue(":inProd", inORout);
 
      return query.exec();
+ }
+
+ QSqlQueryModel *ProdottiDatabaseManager::getModelGiac()
+ {
+      QSqlQueryModel* model = new QSqlQueryModel;
+      model->setQuery("SELECT * FROM prodotti WHERE giacProd > 0");
+      return model;
+ }
+
+ bool ProdottiDatabaseManager::modGiac(QString id, int n)
+ {
+     QSqlQuery qry;
+     qry.prepare("SELECT giacProd from prodotti WHERE IDProd = :id");
+     qry.bindValue(":id", id);
+     qry.exec();
+
+     qry.next();
+     int current = qry.value(0).toInt();
+     if(current <= 0 && n <=0){
+         return false;
+     } else {
+         if(n<=0 && (-n>current)){
+             return false;
+         }
+         QSqlQuery query;
+         query.prepare("UPDATE prodotti SET giacProd = :giac WHERE IDProd = :id");
+         query.bindValue(":id", id);
+         query.bindValue(":giac", current + n);
+
+         return query.exec();
+     }
  }
 

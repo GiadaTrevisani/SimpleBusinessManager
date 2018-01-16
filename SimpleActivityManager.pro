@@ -37,7 +37,9 @@ SOURCES += \
     fornitoridatabasemanager.cpp \
     prodottidatabasemanager.cpp \
     fatturedatabasemanager.cpp \
-    aziendadatabasemanager.cpp
+    aziendadatabasemanager.cpp \
+    scegliclifordialog.cpp \
+    scegliprodottodialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -51,7 +53,11 @@ HEADERS += \
     fornitoridatabasemanager.h \
     prodottidatabasemanager.h \
     fatturedatabasemanager.h \
-    aziendadatabasemanager.h
+    aziendadatabasemanager.h \
+    scegliclifordialog.h \
+    scegliprodottodialog.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    scegliclifordialog.ui \
+    scegliprodottodialog.ui

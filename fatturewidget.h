@@ -17,11 +17,14 @@
 #include <QStackedLayout>
 #include <QModelIndex>
 #include <QMessageBox>
+#include <QHash>
 
 #include <fatturedatabasemanager.h>
 #include <clientdatabasemanager.h>
 #include <fornitoridatabasemanager.h>
 #include <aziendadatabasemanager.h>
+#include "scegliclifordialog.h"
+#include "scegliprodottodialog.h"
 
 class FattureWidget : public QWidget
 {
@@ -39,6 +42,12 @@ public slots:
     void goToMainView();
     void insertInvoice();
     void searchChanged(QString src);
+
+    void searchCliFor();
+
+    void addProd();
+    void deleteProd();
+    void updateTable();
 
 private:
     void enableWidgets();
@@ -84,7 +93,14 @@ private:
     FattureDatabaseManager* db;
     QSqlQueryModel* model;
 
+    QPushButton* add;
+    QPushButton* remove;
+    QPushButton* search;
+
     bool newORdetail;
+
+    QHash<QString, int>* prodsgiac;
+    QString currentID;
 };
 
 #endif // FATTUREWIDGET_H
