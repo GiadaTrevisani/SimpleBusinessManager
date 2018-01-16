@@ -9,10 +9,13 @@
 int main(int argc, char *argv[])
 {
     /*
-     * in questa classe, che esiste per tutta la durata del programma è definito
-     * il database con nome db, creato con sqlite3 dove abbiamo creato anche le tabelle
-     * con il comando INSERT TABLE IF NOT EXISTS, e qui nella classe main viene implementato
-     * appunto questo database
+     *  qui è definita la connessione con
+     * il database con nome db, creato con sqlite3 
+     * dove saranno mantenute tutte le informazioni 
+     * persistenti del programma. se il programma è
+     * aperto per la prima volta, allora l'applicazione
+     * pensa a generare il fìdatabase e le cartelle
+     * già contenute.
      */
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("database.db");
